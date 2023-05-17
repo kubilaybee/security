@@ -5,7 +5,7 @@ import com.qb.security.entity.User;
 import com.qb.security.enums.Role;
 import com.qb.security.exception.AlreadyExistEmailException;
 import com.qb.security.exception.InvalidEmailException;
-import com.qb.security.repository.UserRepository;
+import com.qb.security.repository.UserRepositoryJPA;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class AuthenticationService {
 
-    private final UserRepository userRepository;
+    private final UserRepositoryJPA userRepositoryJPA;
 
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -36,7 +36,7 @@ public class AuthenticationService {
             throw new InvalidEmailException("Invalid Email !!");
         }
 
-        boolean isEmailExist = userRepository.findByEmail(request.getEmail()).isPresent();
+        boolean isEmailExist = userRepositoryJPA.existsByEmail(request.getEmail());
 
         if (isEmailExist){
             throw new AlreadyExistEmailException("Email Already Exist !!");
@@ -49,7 +49,7 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        userRepositoryJPA.save(user);
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
@@ -63,7 +63,7 @@ public class AuthenticationService {
                         request.getPassword()
                 )
         );
-        var user = userRepository.findByEmail(request.getEmail())
+        var user = userRepositoryJPA.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
