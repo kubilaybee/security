@@ -1,6 +1,6 @@
 package com.qb.security.repository;
 
-import com.qb.security.entity.User;
+import com.qb.security.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package com.qb.security.auth;
+package com.qb.security.domain.user.dto.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

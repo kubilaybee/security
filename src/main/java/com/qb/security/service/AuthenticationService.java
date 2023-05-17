@@ -1,8 +1,11 @@
-package com.qb.security.auth;
+package com.qb.security.service;
 
 import com.qb.security.config.JwtService;
-import com.qb.security.entity.User;
-import com.qb.security.enums.Role;
+import com.qb.security.domain.user.User;
+import com.qb.security.domain.user.dto.requests.AuthenticationRequest;
+import com.qb.security.domain.user.dto.requests.RegisterRequest;
+import com.qb.security.domain.user.dto.responses.AuthenticationResponse;
+import com.qb.security.utils.enums.Role;
 import com.qb.security.exception.AlreadyExistEmailException;
 import com.qb.security.exception.InvalidEmailException;
 import com.qb.security.repository.UserRepositoryJPA;
@@ -26,7 +29,7 @@ public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(RegisterRequest request) {
+    public AuthenticationResponse register(RegisterRequest request) throws InvalidEmailException, AlreadyExistEmailException {
 
         String regex = "^[\\w!#$%&amp;'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&amp;'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
 

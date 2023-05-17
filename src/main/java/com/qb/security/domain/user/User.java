@@ -1,9 +1,7 @@
-package com.qb.security.entity;
+package com.qb.security.domain.user;
 
-import com.qb.security.enums.Role;
+import com.qb.security.utils.enums.Role;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
