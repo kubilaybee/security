@@ -3,6 +3,8 @@ package com.qb.security.auth;
 import com.qb.security.config.JwtService;
 import com.qb.security.entity.User;
 import com.qb.security.enums.Role;
+import com.qb.security.exception.AlreadyExistEmailException;
+import com.qb.security.exception.InvalidEmailException;
 import com.qb.security.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,6 +12,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +27,21 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
+
+        String regex = "^[\\w!#$%&amp;'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&amp;'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
+
+        boolean isEmailFormatCorrect = Pattern.compile(regex).matcher(request.getEmail()).matches();
+
+        if (!isEmailFormatCorrect){
+            throw new InvalidEmailException("Invalid Email !!");
+        }
+
+        boolean isEmailExist = userRepository.findByEmail(request.getEmail()).isPresent();
+
+        if (isEmailExist){
+            throw new AlreadyExistEmailException("Email Already Exist !!");
+        }
+
         var user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -30,9 +49,6 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
-        //Todo: Mail is exist
-        //Todo: mail format
-
         userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
